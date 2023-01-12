@@ -6,15 +6,32 @@ using GeoLocationInfoImporter;
 
 Console.WriteLine("Hello, Importer!");
 
-using (var reader = new StreamReader(@"..\..\..\Data\countries.csv"))
-using (StreamWriter writer = new StreamWriter("countries_output.txt"))
-using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+var countryList = new List<Country>();
+var cityList = new List<City>();
+
+using (var countriesReader = new StreamReader(@"..\..\..\Data\countries.csv"))
+using (var citiesReader = new StreamReader(@"..\..\..\Data\cities.csv"))
+using (StreamWriter countriesWriter = new StreamWriter("countries_output.txt"))
+using (StreamWriter citiesWriter = new StreamWriter("cities_output.txt"))
+using (var csvCountries = new CsvReader(countriesReader, CultureInfo.InvariantCulture))
+using (var csvCities = new CsvReader(citiesReader, CultureInfo.InvariantCulture))
 {
-    var records = csv.GetRecords<Country>().ToList();
-    foreach (var country in records)
+    countryList = csvCountries.GetRecords<Country>().ToList();
+    Console.WriteLine($"We read {countryList.Count()} countries; - Done");
+
+    cityList = csvCities.GetRecords<City>().ToList();
+    cityList = cityList.Distinct(new CityComparer()).ToList();
+    Console.WriteLine($"We read {cityList.Count()} cities; - Done");
+
+    foreach (var country in countryList)
     {
-        writer.WriteLine($"INSERT INTO Country(Name, Code, IsoCode2Character)VALUES('{country.Name}', '{country.Code}', '{country.IsoCode2Character}');");
+        countriesWriter.WriteLine($"INSERT INTO Country(Name, Code, IsoCode2Character)VALUES('{country.Name}', '{country.Code}', '{country.IsoCode2Character}');");
     }
-    Console.WriteLine($"We wrote {records.Count()} countries;");
+
+    foreach (var city in cityList)
+    {
+        citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId)VALUES('{city.Name}', select Id from Country where IsoCode2Character='{city.CountryCode}');");
+    }
+
 }
 Console.ReadLine();
