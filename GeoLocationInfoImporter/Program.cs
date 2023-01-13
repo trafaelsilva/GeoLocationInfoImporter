@@ -39,11 +39,11 @@ using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture)
     {
         if (city.IsNumericState)
         {
-            citiesWriter.WriteLine($"INSERT INTO City(Name, Country )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}');");
+            citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}');");
         }
         else
         {
-            citiesWriter.WriteLine($"INSERT INTO City(Name, Country, StateProvince )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}' , select Id from StateProvince where Code='{city.StateCode}');");
+            citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId, StateProvinceId )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}' , select Id from StateProvince where Code='{city.StateCode}');");
         }
 
         
@@ -51,7 +51,7 @@ using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture)
 
     foreach (var state in statesList)
     {
-        statesWriter.WriteLine($"INSERT INTO StateProvince(Name, Code, Country )VALUES('{state.Name.Replace("'", @"\'")}', '{state.Code}', select Id from Country where IsoCode2Character='{state.CountryCode}');");
+        statesWriter.WriteLine($"INSERT INTO StateProvince(Name, Code, CountryId )VALUES('{state.Name.Replace("'", @"\'")}', '{state.Code}', select Id from Country where IsoCode2Character='{state.CountryCode}');");
     }
 
 }
