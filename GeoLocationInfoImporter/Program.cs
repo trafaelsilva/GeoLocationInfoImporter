@@ -45,7 +45,7 @@ using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture)
 
         else
         {
-            citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId, StateProvinceId )VALUES('{city.Name.Replace("'", @"''")}', ( select Id from Country where IsoCode2Character='{city.CountryCode}') , (select Id from StateProvince where Code='{city.StateCode}'));");
+            citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId, StateProvinceId )VALUES('{city.Name.Replace("'", @"''")}', ( select Id from Country where IsoCode2Character='{city.CountryCode}') , (select Id from StateProvince where Code='{city.StateCode}' and CountryId=(select Id from Country where IsoCode2Character='{city.CountryCode}')));");
         }
 
         if ((i++ % 100) == 0)
@@ -58,10 +58,14 @@ using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture)
     i = 1;
     foreach (var state in statesList)
     {
-        statesWriter.WriteLine($"INSERT INTO StateProvince(Name, Code, CountryId )VALUES('{state.Name.Replace("'", @"''")}', '{state.Code}', (select Id from Country where IsoCode2Character='{state.CountryCode}'));");
-        if ((i++ % 100) == 0)
+        if (!state.IsNumericState)
         {
-            statesWriter.WriteLine("GO");
+            statesWriter.WriteLine($"INSERT INTO StateProvince(Name, Code, CountryId )VALUES('{state.Name.Replace("'", @"''")}', '{state.Code}', (select Id from Country where IsoCode2Character='{state.CountryCode}'));");
+            if ((i++ % 100) == 0)
+            {
+                statesWriter.WriteLine("GO");
+            }
+
         }
     }
 

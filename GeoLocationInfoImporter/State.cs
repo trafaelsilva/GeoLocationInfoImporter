@@ -17,5 +17,7 @@ namespace GeoLocationInfoImporter
 
         [Index(3)]
         public string CountryCode { get; set; }
+
+        public bool IsNumericState => int.TryParse(Code, out int i);
     }
 }
