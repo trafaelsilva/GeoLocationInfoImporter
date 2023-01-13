@@ -13,9 +13,9 @@ var statesList = new List<State>();
 using (var countriesReader = new StreamReader(@"..\..\..\Data\countries.csv"))
 using (var citiesReader = new StreamReader(@"..\..\..\Data\cities.csv"))
 using (var statesReader = new StreamReader(@"..\..\..\Data\states.csv"))
-using (StreamWriter countriesWriter = new StreamWriter("countries_output.txt"))
-using (StreamWriter citiesWriter = new StreamWriter("cities_output.txt"))
-using (StreamWriter statesWriter = new StreamWriter("states_output.txt"))
+using (StreamWriter countriesWriter = new StreamWriter("countries_output.sql"))
+using (StreamWriter citiesWriter = new StreamWriter("cities_output.sql"))
+using (StreamWriter statesWriter = new StreamWriter("states_output.sql"))
 using (var csvCountries = new CsvReader(countriesReader, CultureInfo.InvariantCulture))
 using (var csvCities = new CsvReader(citiesReader, CultureInfo.InvariantCulture))
 using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture))
@@ -41,6 +41,7 @@ using (var csvStates = new CsvReader(statesReader, CultureInfo.InvariantCulture)
         {
             citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}');");
         }
+
         else
         {
             citiesWriter.WriteLine($"INSERT INTO City(Name, CountryId, StateProvinceId )VALUES('{city.Name.Replace("'", @"\'")}', select Id from Country where IsoCode2Character='{city.CountryCode}' , select Id from StateProvince where Code='{city.StateCode}');");
